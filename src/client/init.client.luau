@@ -1,9 +1,10 @@
 --!strict
 
-local StarterGui = game:GetService("StarterGui")
+local StarterPlayer = game:GetService("StarterPlayer")
+local ClientGame = require(StarterPlayer.StarterPlayerScripts.Client.ClientGame)
 
 local function initClient(): ()
-	StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
+	ClientGame.getInstance():start()
 end
 
 initClient()

@@ -1,4 +1,6 @@
 --!strict
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local network = require(ReplicatedStorage.Shared.network)
 
 local PlayerTool = {}
 PlayerTool.__index = PlayerTool
@@ -9,6 +11,7 @@ export type PlayerTool = {
 	tool: Tool?,
 	lastUsed: number?,
 	useConnection: any,
+	cooldown: number,
 
 	new: (tool: Tool) -> PlayerTool,
 } & typeof(setmetatable({}, PlayerTool))
@@ -17,6 +20,8 @@ function PlayerTool.new(player: Player, tool: Tool?): PlayerTool
 	local self = setmetatable({}, PlayerTool) :: PlayerTool
 	self.player = player
 	self.tool = tool
+
+	self.cooldown = 0.35
 	return self
 end
 
@@ -85,9 +90,15 @@ end
 
 function PlayerTool.use(self: PlayerTool): ()
 	-- Implement tool usage logic here
+
+	if os.time() - (self.lastUsed or 0) < self.cooldown then
+		-- Cooldown
+		return
+	end
+
 	self.lastUsed = os.time()
 
-	print("TOOL USED!")
+	network.ToolUsed.sendTo(nil, self.player)
 end
 
 return PlayerTool
