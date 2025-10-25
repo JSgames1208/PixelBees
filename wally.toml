@@ -1,0 +1,12 @@
+[package]
+name = "jasper-soete/pixelbees"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+
+[dependencies]
+Bytenet = "ffrostflame/bytenet@0.4.6"
+Fusion = "elttob/fusion@0.3.0"
+
+[server-dependencies]
+ProfileService = "firebird702/profileservice@1.1.0"
