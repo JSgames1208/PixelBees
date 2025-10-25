@@ -1,14 +1,20 @@
 --!strict
 local RunService = game:GetService("RunService")
 local ServerScriptService = game:GetService("ServerScriptService")
-local FieldService = require(ServerScriptService.Server.game.fields.FieldService)
+local ServiceRegistry = require(ServerScriptService.Server.game.util.ServiceRegistry)
+
+local FieldService = ServiceRegistry.FieldService
+local ToolService = ServiceRegistry.ToolService
+local PlayerService = ServiceRegistry.PlayerService
 
 local Game = {}
 Game.__index = Game
 
 export type Game = {
 	-- Define properties and methods of Game here
-	fieldService: FieldService.FieldService,
+	fieldService: typeof(FieldService),
+	toolService: typeof(ToolService),
+	playerService: typeof(PlayerService),
 
 	new: () -> Game,
 	startServices: (self: Game) -> (),
@@ -31,7 +37,12 @@ function Game.new(): Game
 end
 
 function Game.startServices(self: Game): ()
-	self.fieldService = FieldService.getInstance():start()
+	self.fieldService = FieldService:start()
+	self.toolService = ToolService:start()
+	self.playerService = PlayerService:start()
+
+	self.playerService.fieldService = self.fieldService
+	self.playerService.toolService = self.toolService
 end
 
 function Game.start(self: Game): Game
