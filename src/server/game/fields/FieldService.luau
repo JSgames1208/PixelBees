@@ -1,4 +1,5 @@
 --!strict
+
 local ServerScriptService = game:GetService("ServerScriptService")
 local FieldGenerator = require(ServerScriptService.Server.game.fields.FieldGenerator)
 

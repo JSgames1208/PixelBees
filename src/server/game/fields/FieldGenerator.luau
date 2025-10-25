@@ -1,6 +1,10 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
+local Chance = require(ReplicatedStorage.Shared.util.Chance)
 local Field = require(ServerScriptService.Server.game.fields.Field)
 local FieldData = require(ServerScriptService.Server.game.fields.FieldData)
+local Flower = require(ServerScriptService.Server.game.fields.Flower)
+local LoadFlowerPart = require(ServerScriptService.Server.game.fields.LoadFlowerPart)
 
 local FieldGenerator = {}
 FieldGenerator.__index = FieldGenerator
@@ -34,6 +38,19 @@ end
 
 function FieldGenerator.generateField(fieldData: FieldData.FieldData): Field.Field
 	local field = Field.new(fieldData)
+
+	local flowers: { [string]: Flower.Flower } = {}
+	for i = 1, fieldData.size.X / 4 do
+		for j = 1, fieldData.size.Y / 4 do
+			local color = Chance(fieldData.chance.colors)
+			local size = Chance(fieldData.chance.sizes)
+
+			flowers[string.format("%d_%d", i, j)] = Flower.new(color, size)
+		end
+	end
+
+	field:populate(flowers)
+
 	return field
 end
 
@@ -48,23 +65,19 @@ function FieldGenerator.generateFields(): { [string]: Field.Field }
 	return fields
 end
 
-function FieldGenerator.generateModel(Field: Field.Field): Model
+function FieldGenerator.generateModel(field: Field.Field): Model
 	local model = Instance.new("Model")
-	model.Name = Field.data.name
+	model.Name = field.data.name
 
-	for i = 2, Field.data.size.X - 2, 4 do
-		for j = 2, Field.data.size.Y - 2, 4 do
-			local part = Instance.new("Part")
-			part.Size = Vector3.new(4, 2, 4)
-			part.Material = Enum.Material.SmoothPlastic
-			part.BrickColor = BrickColor.new("Bright green")
-			part.CanCollide = false
+	for i = 1, field.data.size.X / 4 do
+		for j = 1, field.data.size.Y / 4 do
+			local color: string, size: string = field.state:getFlowerStateAt(i, j)
+			local part: Part = LoadFlowerPart(color, size)
 			part.Position = Vector3.new(
-				Field.data.position.X - Field.data.size.X / 2 + i,
-				Field.data.position.Y + 1,
-				Field.data.position.Z - Field.data.size.Y / 2 + j
+				field.data.position.X - field.data.size.X / 2 + i * 4 - 2,
+				field.data.position.Y + 1,
+				field.data.position.Z - field.data.size.Y / 2 + j * 4 - 2
 			)
-			part.Anchored = true
 			part.Parent = model
 		end
 	end
