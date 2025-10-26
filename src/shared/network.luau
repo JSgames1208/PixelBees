@@ -1,3 +1,5 @@
+--!strict
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Bytenet = require(ReplicatedStorage.Packages.Bytenet)
 

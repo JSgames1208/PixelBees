@@ -1,3 +1,5 @@
+--!strict
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local Types = require(ReplicatedStorage.Shared.util.Types)
@@ -30,10 +32,10 @@ function Field.containsPosition(self: Field, position: Vector3): boolean
 	local fieldPos = self.data.position
 	return position.X >= fieldPos.X - size.X / 2
 		and position.X <= fieldPos.X + size.X / 2
-		and position.Y >= fieldPos.Y - size.Y / 2
-		and position.Y <= fieldPos.Y + size.Y / 2 + 10
-		and position.Z >= fieldPos.Z - size.Z / 2
-		and position.Z <= fieldPos.Z + size.Z / 2
+		and position.Y >= fieldPos.Y + 10
+		and position.Y <= fieldPos.Y + 10
+		and position.Z >= fieldPos.Z - size.Y / 2
+		and position.Z <= fieldPos.Z + size.Y / 2
 end
 
 return Field

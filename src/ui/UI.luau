@@ -1,3 +1,5 @@
+--!strict
+
 local StarterGui = game:GetService("StarterGui")
 local UI = {}
 UI.__index = UI

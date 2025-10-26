@@ -1,17 +1,10 @@
+--!strict
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Types = require(ReplicatedStorage.Shared.util.Types)
 local FieldUtil = {}
 
 type Field = Types.Field
-
-function FieldUtil.getFieldFromPosition(position: Vector3, fields: { [string]: Field }): Field?
-	for _, field in fields do
-		if field:containsPosition(position) then
-			return field
-		end
-	end
-	return nil
-end
 
 function FieldUtil.getPosInField(position: Vector3, field: Field): Vector2
 	local relativePos = position

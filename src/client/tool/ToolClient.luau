@@ -1,3 +1,5 @@
+--!strict
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StarterPlayer = game:GetService("StarterPlayer")
 local AnimationIds = require(StarterPlayer.StarterPlayerScripts.Client.player.AnimationIds)

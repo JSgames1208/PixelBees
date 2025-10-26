@@ -1,3 +1,5 @@
+--!strict
+
 local AnimationClient = {}
 AnimationClient.__index = AnimationClient
 
