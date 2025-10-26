@@ -9,9 +9,10 @@ local PlayerTool = require(ServerScriptService.Server.game.tool.PlayerTool)
 local ToolService = {}
 ToolService.__index = ToolService
 
-type FieldService = Types.FieldService
-
 type ToolService = Types.ToolService & typeof(setmetatable({}, ToolService))
+
+type FieldService = Types.FieldService
+type PlayerTool = Types.PlayerTool
 
 local _instance: ToolService?
 
@@ -35,6 +36,10 @@ function ToolService.start(self: ToolService): ToolService
 	return self
 end
 
+function ToolService.getPlayerTool(self: ToolService, player: Player): PlayerTool
+	return self.playerTools[player.UserId]
+end
+
 function ToolService.onPlayerAdded(self: ToolService, player: Player): ()
 	-- Handle player added logic for tools
 	self.playerTools[player.UserId] = PlayerTool.new(player, nil)
@@ -43,7 +48,6 @@ function ToolService.onPlayerAdded(self: ToolService, player: Player): ()
 end
 
 function ToolService.equip(self: ToolService, player: Player, toolId: string): ()
-	print("Equipping tool", toolId, "to player", player.Name)
 	local playerId = player.UserId
 	local playerTool = self.playerTools[playerId]
 

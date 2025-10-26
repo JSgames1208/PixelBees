@@ -38,8 +38,4 @@ function FlowerCollection.getTouchingParts(part: BasePart): { BasePart }
 	return results
 end
 
-function FlowerCollection.collect(player: Player)
-	-- Implement flower collection logic here
-end
-
 return FlowerCollection

@@ -34,6 +34,7 @@ function Game.startServices(self: Game): ()
 	self.playerService = PlayerService:start()
 
 	self.fieldService.playerService = self.playerService
+	self.fieldService.toolService = self.toolService
 	self.playerService.fieldService = self.fieldService
 	self.playerService.toolService = self.toolService
 	self.toolService.fieldService = self.fieldService

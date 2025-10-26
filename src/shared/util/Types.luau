@@ -12,6 +12,8 @@ export type FieldService = {
 	generator: FieldGenerator,
 	flowerCollection: FlowerCollection,
 	playerService: PlayerService,
+	toolService: ToolService,
+	replenishConnection: RBXScriptConnection?,
 
 	-- Methods
 	new: () -> FieldService,
@@ -22,6 +24,9 @@ export type FieldService = {
 	setField: (self: FieldService, fieldId: string, fieldData: any) -> (),
 	setFields: (self: FieldService, fieldsData: { [string]: any }) -> (),
 	getPlayerField: (self: FieldService, player: Player) -> any,
+	collect: (self: FieldService, player: Player) -> (),
+	replenish: (self: FieldService) -> (),
+	startReplenish: (self: FieldService) -> (),
 }
 
 export type PlayerService = {
@@ -48,15 +53,16 @@ export type ToolService = {
 	new: () -> ToolService,
 	getInstance: () -> ToolService,
 	start: (self: ToolService) -> ToolService,
+	getPlayerTool: (self: ToolService, player: Player) -> PlayerTool,
 	playerTools: { [number]: PlayerTool },
 	onPlayerAdded: (self: ToolService, player: Player) -> (),
 	equip: (self: ToolService, player: Player, toolId: string) -> (),
-	toolUsedCallback: (self: ToolService, player: Player) -> (),
 }
 
 -------------------------
 -- Field
 -------------------------
+
 export type FieldGenerator = {
 	new: () -> FieldGenerator,
 	getInstance: () -> FieldGenerator,
@@ -72,10 +78,14 @@ export type Field = {
 	state: FieldState,
 
 	model: Model?,
+	toReplenish: { string },
 
 	new: (id: string, data: any) -> Field,
 	setModel: (self: Field, model: Model) -> (),
 	populate: (self: Field, flowers: { [string]: Flower }) -> (),
+	containsPosition: (self: Field, position: Vector3) -> boolean,
+	replenish: (self: Field) -> (),
+	harvest: (self: Field, flowerKey: string, amount: number) -> (),
 }
 
 export type FieldData = {
@@ -102,8 +112,11 @@ export type Flower = {
 	-- Define properties and methods of Flower here
 	color: string,
 	size: string,
+	harvested: number,
 
 	new: (id: string, data: any) -> Flower,
+	harvest: (self: Flower, amount: number) -> (),
+	replenish: (self: Flower, amount: number) -> (),
 }
 
 export type FlowerChance = {
@@ -117,6 +130,9 @@ export type FlowerChance = {
 
 export type FlowerCollection = {
 	-- Define properties and methods of FlowerCollection here
+	fieldService: FieldService,
+	playerService: PlayerService,
+
 	new: () -> FlowerCollection,
 	getInstance: () -> FlowerCollection,
 	start: (self: FlowerCollection) -> FlowerCollection,
@@ -147,6 +163,7 @@ export type PlayerEntity = {
 export type PlayerTool = {
 	player: Player,
 	tool: Tool?,
+	toolName: string,
 	lastUsed: number?,
 	useConnection: RBXScriptConnection?,
 	cooldown: number,

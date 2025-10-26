@@ -1,8 +1,6 @@
 --!strict
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ServerScriptService = game:GetService("ServerScriptService")
-local FieldUtil = require(ServerScriptService.Server.game.fields.FieldUtil)
 local network = require(ReplicatedStorage.Shared.network)
 local Types = require(ReplicatedStorage.Shared.util.Types)
 
@@ -16,7 +14,11 @@ type Field = Types.Field
 function PlayerTool.new(player: Player, tool: Tool?): PlayerTool
 	local self = setmetatable({}, PlayerTool) :: PlayerTool
 	self.player = player
+
 	self.tool = tool
+	if self.tool then
+		self.toolName = self.tool.Name
+	end
 
 	self.cooldown = 0.35
 	return self
@@ -36,6 +38,7 @@ end
 
 function PlayerTool.setTool(self: PlayerTool, tool: Tool): ()
 	self.tool = tool
+	self.toolName = tool.Name
 end
 
 function PlayerTool.isEquipped(self: PlayerTool): boolean
@@ -47,7 +50,7 @@ function PlayerTool.equip(self: PlayerTool, tool: Tool): ()
 		self:destroy()
 	end
 
-	self.tool = tool
+	self:setTool(tool)
 
 	local char: Model = self.player.Character :: Model or self.player.CharacterAdded:Wait()
 	if not char then
@@ -99,13 +102,7 @@ function PlayerTool.use(self: PlayerTool): ()
 	self.lastUsed = os.time()
 
 	-- Collect pollen maybe
-	local field: Field = self.fieldService:getPlayerField(self.player)
-	if field then
-		local position =
-			FieldUtil.getPosInField(self.playerService:getPlayerEntity(self.player):getCollider().Position, field)
-
-		print(position)
-	end
+	self.fieldService:collect(self.player)
 
 	network.ToolUsed.sendTo(nil, self.player)
 end
