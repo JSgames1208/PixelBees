@@ -1,19 +1,16 @@
 --!strict
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
+local Types = require(ReplicatedStorage.Shared.util.Types)
 local LoadTool = require(ServerScriptService.Server.game.tool.LoadTool)
 local PlayerTool = require(ServerScriptService.Server.game.tool.PlayerTool)
 
 local ToolService = {}
 ToolService.__index = ToolService
 
-export type ToolService = {
-	-- Define properties and methods of ToolService here
+type FieldService = Types.FieldService
 
-	new: () -> ToolService,
-	getInstance: () -> ToolService,
-	start: (self: ToolService) -> ToolService,
-	playerTools: { [number]: PlayerTool.PlayerTool },
-} & typeof(setmetatable({}, ToolService))
+type ToolService = Types.ToolService & typeof(setmetatable({}, ToolService))
 
 local _instance: ToolService?
 
@@ -40,6 +37,8 @@ end
 function ToolService.onPlayerAdded(self: ToolService, player: Player): ()
 	-- Handle player added logic for tools
 	self.playerTools[player.UserId] = PlayerTool.new(player, nil)
+	self.playerTools[player.UserId].fieldService = self.fieldService
+	self.playerTools[player.UserId].playerService = self.playerService
 end
 
 function ToolService.equip(self: ToolService, player: Player, toolId: string): ()

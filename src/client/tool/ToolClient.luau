@@ -36,9 +36,7 @@ function ToolClient.start(self: ToolClient): ToolClient
 	-- Initialize client-side tool logic here
 
 	network.ToolUsed.listen(function()
-		print("Tool used event received on client")
-
-		self.animationClient:playAnimation(AnimationIds.ToolUsed) -- Replace with actual animation ID
+		self.animationClient:playAnimation(AnimationIds.ToolUsed)
 	end)
 
 	return self

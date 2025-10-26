@@ -1,6 +1,8 @@
 --!strict
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local ServerScriptService = game:GetService("ServerScriptService")
+local Types = require(ReplicatedStorage.Shared.util.Types)
 local ServiceRegistry = require(ServerScriptService.Server.game.util.ServiceRegistry)
 
 local FieldService = ServiceRegistry.FieldService
@@ -10,18 +12,7 @@ local PlayerService = ServiceRegistry.PlayerService
 local Game = {}
 Game.__index = Game
 
-export type Game = {
-	-- Define properties and methods of Game here
-	fieldService: typeof(FieldService),
-	toolService: typeof(ToolService),
-	playerService: typeof(PlayerService),
-
-	new: () -> Game,
-	startServices: (self: Game) -> (),
-	start: (self: Game) -> Game,
-	run: (self: Game) -> Game,
-	update: (self: Game, dt: number) -> (),
-} & typeof(setmetatable({}, Game))
+type Game = Types.Game & typeof(setmetatable({}, Game))
 
 local _instance: Game?
 
@@ -41,8 +32,11 @@ function Game.startServices(self: Game): ()
 	self.toolService = ToolService:start()
 	self.playerService = PlayerService:start()
 
+	self.fieldService.playerService = self.playerService
 	self.playerService.fieldService = self.fieldService
 	self.playerService.toolService = self.toolService
+	self.toolService.fieldService = self.fieldService
+	self.toolService.playerService = self.playerService
 end
 
 function Game.start(self: Game): Game
@@ -61,6 +55,7 @@ end
 
 function Game.update(self: Game, dt: number): ()
 	self.fieldService:update(dt)
+	self.playerService:update(dt)
 end
 
 function Game.getInstance(): Game

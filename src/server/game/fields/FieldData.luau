@@ -1,27 +1,22 @@
 --!strict
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
+local Types = require(ReplicatedStorage.Shared.util.Types)
 local FlowerChance = require(ServerScriptService.Server.game.fields.FlowerChance)
 
 local FieldData = {}
 FieldData.__index = FieldData
 
-export type FieldData = {
-	-- Define properties of FieldData here
-	id: string,
-	name: string,
-	size: Vector2,
-	position: Vector3,
-	chance: FlowerChance.FlowerChance,
+type FieldData = Types.FieldData & typeof(setmetatable({}, FieldData))
 
-	new: (id: string, name: string, size: Vector2, position: Vector3) -> FieldData,
-} & typeof(setmetatable({}, FieldData))
+type FlowerChance = Types.FlowerChance
 
 function FieldData.new(
 	id: string,
 	name: string,
 	size: Vector2,
 	position: Vector3,
-	flowerChance: FlowerChance.FlowerChance
+	flowerChance: FlowerChance
 ): FieldData
 	local self = setmetatable({}, FieldData) :: FieldData
 	self.id = id

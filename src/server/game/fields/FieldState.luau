@@ -1,16 +1,13 @@
 --!strict
-local ServerScriptService = game:GetService("ServerScriptService")
-local Flower = require(ServerScriptService.Server.game.fields.Flower)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Types = require(ReplicatedStorage.Shared.util.Types)
 
 local FieldState = {}
 FieldState.__index = FieldState
 
-export type FieldState = {
-	-- Define properties and methods of FieldState here
-	flowers: { [string]: Flower.Flower },
+type FieldState = Types.FieldState & typeof(setmetatable({}, FieldState))
 
-	new: () -> FieldState,
-} & typeof(setmetatable({}, FieldState))
+type Flower = Types.Flower
 
 function FieldState.new(): FieldState
 	local self = setmetatable({}, FieldState) :: FieldState
@@ -20,7 +17,7 @@ function FieldState.new(): FieldState
 	return self
 end
 
-function FieldState.populate(self: FieldState, flowers: { [string]: Flower.Flower }): ()
+function FieldState.populate(self: FieldState, flowers: { [string]: Flower }): ()
 	self.flowers = flowers
 end
 

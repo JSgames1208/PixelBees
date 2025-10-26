@@ -1,6 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local Chance = require(ReplicatedStorage.Shared.util.Chance)
+local Types = require(ReplicatedStorage.Shared.util.Types)
 local Field = require(ServerScriptService.Server.game.fields.Field)
 local FieldData = require(ServerScriptService.Server.game.fields.FieldData)
 local Flower = require(ServerScriptService.Server.game.fields.Flower)
@@ -9,15 +10,11 @@ local LoadFlowerPart = require(ServerScriptService.Server.game.fields.LoadFlower
 local FieldGenerator = {}
 FieldGenerator.__index = FieldGenerator
 
-export type FieldGenerator = {
-	-- Define properties and methods of FieldGenerator here
-	new: () -> FieldGenerator,
-	getInstance: () -> FieldGenerator,
+type FieldGenerator = Types.FieldGenerator & typeof(setmetatable({}, FieldGenerator))
 
-	generateField: (fieldData: FieldData.FieldData) -> Field.Field,
-	generateFields: () -> { [string]: Field.Field },
-	generateModel: (Field: Field.Field) -> Model,
-} & typeof(setmetatable({}, FieldGenerator))
+type Flower = Types.Flower
+type FieldData = Types.FieldData
+type Field = Types.Field
 
 local _instance: FieldGenerator?
 
@@ -36,10 +33,10 @@ function FieldGenerator.getInstance(): FieldGenerator
 	return _instance or FieldGenerator.new()
 end
 
-function FieldGenerator.generateField(fieldData: FieldData.FieldData): Field.Field
+function FieldGenerator.generateField(fieldData: FieldData): Field
 	local field = Field.new(fieldData)
 
-	local flowers: { [string]: Flower.Flower } = {}
+	local flowers: { [string]: Flower } = {}
 	for i = 1, fieldData.size.X / 4 do
 		for j = 1, fieldData.size.Y / 4 do
 			local color = Chance(fieldData.chance.colors)
@@ -54,8 +51,8 @@ function FieldGenerator.generateField(fieldData: FieldData.FieldData): Field.Fie
 	return field
 end
 
-function FieldGenerator.generateFields(): { [string]: Field.Field }
-	local fields: { [string]: Field.Field } = {}
+function FieldGenerator.generateFields(): { [string]: Field }
+	local fields: { [string]: Field } = {}
 	for _, fieldTemplate: Part in workspace.FieldTemplates:GetChildren() do
 		local field = FieldGenerator.generateField(FieldData.fromTemplate(fieldTemplate))
 		fields[field.data.id] = field
@@ -65,7 +62,7 @@ function FieldGenerator.generateFields(): { [string]: Field.Field }
 	return fields
 end
 
-function FieldGenerator.generateModel(field: Field.Field): Model
+function FieldGenerator.generateModel(field: Field): Model
 	local model = Instance.new("Model")
 	model.Name = field.data.name
 
@@ -79,6 +76,7 @@ function FieldGenerator.generateModel(field: Field.Field): Model
 				field.data.position.Z - field.data.size.Y / 2 + j * 4 - 2
 			)
 			part.Parent = model
+			part.Name = string.format("%d_%d", i, j)
 		end
 	end
 

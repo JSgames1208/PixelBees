@@ -1,15 +1,10 @@
 --!strict
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Types = require(ReplicatedStorage.Shared.util.Types)
 local FlowerChance = {}
 FlowerChance.__index = FlowerChance
 
-export type FlowerChance = {
-	-- Define properties and methods of FlowerChance here
-	colors: { [string]: number },
-	sizes: { [string]: number },
-
-	new: () -> FlowerChance,
-	getChance: (self: FlowerChance, flowerType: string) -> number,
-} & typeof(setmetatable({}, FlowerChance))
+type FlowerChance = Types.FlowerChance & typeof(setmetatable({}, FlowerChance))
 
 function FlowerChance.new(
 	Blue: number,

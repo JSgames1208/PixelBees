@@ -1,21 +1,16 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
-local FieldData = require(ServerScriptService.Server.game.fields.FieldData)
+local Types = require(ReplicatedStorage.Shared.util.Types)
 local FieldState = require(ServerScriptService.Server.game.fields.FieldState)
+
 local Field = {}
 Field.__index = Field
 
-export type Field = {
-	-- Define properties and methods of Field here
-	data: FieldData.FieldData,
-	state: FieldState.FieldState,
+type Field = Types.Field & typeof(setmetatable({}, Field))
 
-	model: Model?,
+type FieldData = Types.FieldData
 
-	new: (id: string, data: any) -> Field,
-	setModel: (self: Field, model: Model) -> (),
-} & typeof(setmetatable({}, Field))
-
-function Field.new(data: FieldData.FieldData): Field
+function Field.new(data: FieldData): Field
 	local self = setmetatable({}, Field) :: Field
 	self.data = data
 	self.state = FieldState.new()
@@ -28,6 +23,17 @@ end
 
 function Field.populate(self: Field, flowers: { [string]: any }): ()
 	self.state:populate(flowers)
+end
+
+function Field.containsPosition(self: Field, position: Vector3): boolean
+	local size = self.data.size
+	local fieldPos = self.data.position
+	return position.X >= fieldPos.X - size.X / 2
+		and position.X <= fieldPos.X + size.X / 2
+		and position.Y >= fieldPos.Y - size.Y / 2
+		and position.Y <= fieldPos.Y + size.Y / 2 + 10
+		and position.Z >= fieldPos.Z - size.Z / 2
+		and position.Z <= fieldPos.Z + size.Z / 2
 end
 
 return Field
