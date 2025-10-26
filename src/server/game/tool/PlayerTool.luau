@@ -64,8 +64,14 @@ function PlayerTool.equip(self: PlayerTool, tool: Tool): ()
 
 	hum:EquipTool(tool)
 
-	self.useConnection = tool.Activated:Connect(function()
+	--[[self.useConnection = tool.Activated:Connect(function()
 		self:use()
+	end)]]
+
+	self.useConnection = network.ToolUsed.listen(function(data: nil, player: Player?)
+		if player == self.player then
+			self:use()
+		end
 	end)
 end
 
@@ -100,6 +106,10 @@ function PlayerTool.use(self: PlayerTool): ()
 	end
 
 	self.lastUsed = os.time()
+
+	if self.tool then
+		self.tool:Activate()
+	end
 
 	-- Collect pollen maybe
 	self.fieldService:collect(self.player)

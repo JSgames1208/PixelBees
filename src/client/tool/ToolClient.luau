@@ -1,7 +1,10 @@
 --!strict
 
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local StarterPlayer = game:GetService("StarterPlayer")
+local UserInputService = game:GetService("UserInputService")
 local AnimationIds = require(StarterPlayer.StarterPlayerScripts.Client.player.AnimationIds)
 local network = require(ReplicatedStorage.Shared.network)
 
@@ -11,6 +14,7 @@ ToolClient.__index = ToolClient
 export type ToolClient = {
 	-- Define properties and methods of ToolClient here
 	animationClient: typeof(require(StarterPlayer.StarterPlayerScripts.Client.player.AnimationClient).getInstance()),
+	renderSteppedConnection: RBXScriptConnection,
 
 	new: () -> ToolClient,
 	getInstance: () -> ToolClient,
@@ -39,6 +43,16 @@ function ToolClient.start(self: ToolClient): ToolClient
 
 	network.ToolUsed.listen(function()
 		self.animationClient:playAnimation(AnimationIds.ToolUsed)
+	end)
+
+	local last = 0
+	self.renderSteppedConnection = RunService.RenderStepped:Connect(function(dt: number)
+		if UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
+			if os.time() - last > 0.15 then
+				last = os.time()
+				network.ToolUsed.send(nil, Players.LocalPlayer)
+			end
+		end
 	end)
 
 	return self
