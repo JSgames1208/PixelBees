@@ -33,6 +33,7 @@ export type PlayerService = {
 	-- Define properties and methods of PlayerService here
 	fieldService: FieldService,
 	toolService: ToolService,
+	swarmService: SwarmService,
 
 	playerEntities: { [number]: PlayerEntity },
 
@@ -183,6 +184,57 @@ export type PlayerTool = {
 }
 
 -------------------------
+-- Bee
+-------------------------
+
+export type SwarmService = {
+	-- Define properties and methods of BeeService here
+	swarms: { [number]: Swarm },
+
+	new: () -> SwarmService,
+	getInstance: () -> SwarmService,
+	start: (self: SwarmService) -> SwarmService,
+	update: (self: SwarmService, dt: number) -> (),
+	onPlayerAdded: (self: SwarmService, player: Player) -> (),
+
+	addSwarm: (self: SwarmService, player: Player) -> Swarm,
+	getSwarm: (self: SwarmService, player: Player) -> Swarm,
+	removeSwarm: (self: SwarmService, swarm: Swarm) -> (),
+}
+
+export type Swarm = {
+	-- Define properties and methods of Swarm here
+	player: Player,
+	bees: { [string]: Bee },
+
+	new: () -> Swarm,
+	addBee: (self: Swarm, beeType: string) -> (),
+	removeBee: (self: Swarm, bee: Bee) -> (),
+	update: (self: Swarm, dt: number) -> (),
+	destroy: (self: Swarm) -> (),
+	size: (self: Swarm) -> number,
+}
+
+export type Bee = {
+	-- Define properties and methods of Bee here
+	player: Player,
+	model: Model,
+	type: string,
+	index: number,
+	name: string,
+	id: string,
+
+	new: (player: Player, model: Model) -> Bee,
+	update: (self: Bee, dt: number) -> (),
+	destroy: (self: Bee) -> (),
+
+	getFolder: (self: Bee) -> Folder,
+	generateId: (self: Bee) -> string,
+	loadModel: (self: Bee) -> Model,
+	getId: (self: Bee) -> string,
+}
+
+-------------------------
 -- Game
 -------------------------
 
@@ -192,6 +244,7 @@ export type Game = {
 	fieldService: FieldService,
 	toolService: ToolService,
 	playerService: PlayerService,
+	swarmService: SwarmService,
 
 	new: () -> Game,
 	startServices: (self: Game) -> (),

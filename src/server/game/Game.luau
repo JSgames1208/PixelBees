@@ -9,6 +9,7 @@ local ServiceRegistry = require(ServerScriptService.Server.game.util.ServiceRegi
 local FieldService = ServiceRegistry.FieldService
 local ToolService = ServiceRegistry.ToolService
 local PlayerService = ServiceRegistry.PlayerService
+local SwarmService = ServiceRegistry.SwarmService
 
 local Game = {}
 Game.__index = Game
@@ -32,11 +33,15 @@ function Game.startServices(self: Game): ()
 	self.fieldService = FieldService:start()
 	self.toolService = ToolService:start()
 	self.playerService = PlayerService:start()
+	self.swarmService = SwarmService:start()
 
 	self.fieldService.playerService = self.playerService
 	self.fieldService.toolService = self.toolService
+
 	self.playerService.fieldService = self.fieldService
 	self.playerService.toolService = self.toolService
+	self.playerService.swarmService = self.swarmService
+
 	self.toolService.fieldService = self.fieldService
 	self.toolService.playerService = self.playerService
 end

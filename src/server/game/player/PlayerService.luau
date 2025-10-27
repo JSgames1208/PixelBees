@@ -69,6 +69,8 @@ function PlayerService.onPlayerAdded(self: PlayerService, player: Player): ()
 	self.toolService:equip(player, "BasicTool")
 
 	self.playerEntities[player.UserId] = PlayerEntity.new(player):start()
+
+	self.swarmService:onPlayerAdded(player)
 end
 
 function PlayerService.onPlayerRemoving(self: PlayerService, player: Player): ()
