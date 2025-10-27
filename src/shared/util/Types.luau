@@ -219,6 +219,7 @@ export type Bee = {
 	-- Define properties and methods of Bee here
 	player: Player,
 	model: Model,
+	ai: BeeAI,
 	type: string,
 	index: number,
 	name: string,
@@ -233,6 +234,36 @@ export type Bee = {
 	loadModel: (self: Bee) -> Model,
 	getId: (self: Bee) -> string,
 }
+
+export type BeeAI = {
+	-- Define properties and methods of BeeAI here
+	bee: Bee,
+	speed: number,
+	state: BeeState,
+	maxDistance: number,
+	maxHeight: number,
+	timeInState: number,
+	destination: Vector3?,
+	timeOut: number,
+	changeDirection: boolean,
+	restRotation: CFrame,
+
+	new: (bee: Bee) -> BeeAI,
+	step: (self: BeeAI, dt: number) -> (),
+	setState: (self: BeeAI, state: string) -> (),
+	waitFor: (self: BeeAI, seconds: number) -> (),
+	onTimeOut: (self: BeeAI) -> boolean,
+	getPosAroundPlayer: (self: BeeAI) -> Vector3,
+	getPlayerPos: (self: BeeAI) -> Vector3,
+	isCloseToPlayer: (self: BeeAI) -> boolean,
+	move: (self: BeeAI, dt: number) -> (),
+	states: {
+		idle: (self: BeeAI, dt: number) -> (),
+		collect: (self: BeeAI, dt: number) -> (),
+	},
+}
+
+export type BeeState = "idle" | "collect"
 
 -------------------------
 -- Game

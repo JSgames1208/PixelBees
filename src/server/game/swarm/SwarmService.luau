@@ -56,7 +56,7 @@ end
 function SwarmService.onPlayerAdded(self: SwarmService, player: Player): ()
 	local swarm = self:addSwarm(player)
 
-	for i = 1, 10 do
+	for i = 1, 100 do
 		swarm:addBee("BasicBee")
 	end
 end

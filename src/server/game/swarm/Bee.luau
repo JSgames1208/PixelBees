@@ -1,6 +1,7 @@
 --!strict
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
+local BeeAI = require(ServerScriptService.Server.game.swarm.BeeAI)
 local LoadBeeModel = require(ServerScriptService.Server.game.swarm.LoadBeeModel)
 local Types = require(ReplicatedStorage.Shared.util.Types)
 
@@ -17,6 +18,8 @@ function Bee.new(player: Player, beeType: string, index: number): Bee
 
 	self.id = self:generateId()
 	self.model = self:loadModel()
+
+	self.ai = BeeAI.new(self)
 
 	return self
 end
@@ -42,7 +45,7 @@ function Bee.getFolder(self: Bee): ()
 end
 
 function Bee.update(self: Bee, dt: number)
-	-- Update bee
+	self.ai:step(dt)
 end
 
 function Bee.generateId(self: Bee): string

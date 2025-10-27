@@ -63,6 +63,7 @@ end
 function Game.update(self: Game, dt: number): ()
 	self.fieldService:update(dt)
 	self.playerService:update(dt)
+	self.swarmService:update(dt)
 end
 
 function Game.getInstance(): Game
