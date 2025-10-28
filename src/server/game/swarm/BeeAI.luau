@@ -16,11 +16,13 @@ function BeeAI.new(bee: Bee): BeeAI
 	local self = setmetatable({}, BeeAI) :: BeeAI
 	self.bee = bee
 	self.state = "idle"
-	self.speed = 20
-	self.maxDistance = 50
-	self.maxHeight = 10
+	self.speed = 15
+	self.maxDistance = 40
+	self.maxHeight = 7.5
 	self.timeInState = 0
 	self.timeOut = 0
+	self.gatherChance = 2
+	self.gatherDuration = 4
 	self.changeDirection = false
 	self.restRotation = self:getPrimaryPart().CFrame.Rotation
 	return self
@@ -146,7 +148,7 @@ function BeeAI.states.idle(self: BeeAI, dt: number): ()
 	end
 
 	if self.bee.swarm.fieldId then
-		if math.random() < 0.0005 then
+		if math.random() < 0.0005 * self.gatherChance then
 			self.setState(self, "moveToCollect")
 			return
 		end
@@ -200,7 +202,7 @@ function BeeAI.states.moveToCollect(self: BeeAI, dt: number): ()
 end
 
 function BeeAI.states.collect(self: BeeAI, dt: number): ()
-	if self.timeInState > 3 then
+	if self.timeInState > self.gatherDuration then
 		local fieldService = self.bee.swarm.fieldService
 		if not self.harvestFieldId or not self.harvestFlower then
 			return

@@ -20,8 +20,6 @@ end
 
 function FieldState.populate(self: FieldState, flowers: { [string]: Flower }): ()
 	self.flowers = flowers
-
-	print(self.flowers)
 end
 
 function FieldState.getCount(self: FieldState): number

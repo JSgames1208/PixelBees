@@ -4,9 +4,7 @@ local ToolsFolder: Folder = game:GetService("ReplicatedStorage"):WaitForChild("A
 
 local function LoadTool(toolName: string): Tool
 	local tool: Tool = ToolsFolder:WaitForChild(toolName) :: Tool
-	if tool then
-		print("Loaded tool:", toolName)
-	else
+	if not tool then
 		warn("Tool not found:", toolName)
 	end
 	return tool:Clone()

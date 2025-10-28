@@ -319,6 +319,8 @@ export type BeeAI = {
 	timeInState: number,
 	destination: Vector3?,
 	timeOut: number,
+	gatherChance: number,
+	gatherDuration: number,
 	changeDirection: boolean,
 	restRotation: CFrame,
 	harvestFieldId: string?,

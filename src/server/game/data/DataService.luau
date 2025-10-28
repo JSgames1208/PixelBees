@@ -77,7 +77,7 @@ end
 function DataService.onPlayerAdded(self: DataService, player: Player): ()
 	task.spawn(function()
 		self:loadPlayerData(player)
-		print(self:getProfile(player))
+		print(self:getData(player))
 	end)
 end
 
