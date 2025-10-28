@@ -16,7 +16,7 @@ function BeeAI.new(bee: Bee): BeeAI
 	local self = setmetatable({}, BeeAI) :: BeeAI
 	self.bee = bee
 	self.state = "idle"
-	self.speed = 12.5
+	self.speed = 20
 	self.maxDistance = 50
 	self.maxHeight = 10
 	self.timeInState = 0
@@ -27,6 +27,9 @@ function BeeAI.new(bee: Bee): BeeAI
 end
 
 function BeeAI.step(self: BeeAI, dt: number): ()
+	if not self.bee.model then
+		return
+	end
 	self.timeInState += dt
 	if self.states[self.state] then
 		self.states[self.state](self, dt)
@@ -44,6 +47,7 @@ function BeeAI.onTimeOut(self: BeeAI): boolean
 end
 
 function BeeAI.setState(self: BeeAI, state: BeeState): ()
+	self.destination = nil
 	self.state = state
 	self.timeInState = 0
 end
@@ -87,6 +91,30 @@ function BeeAI.isCloseToPlayer(self: BeeAI): boolean
 	return distance <= math.sqrt(2) * self.maxDistance
 end
 
+function BeeAI.destinationReached(self: BeeAI): ()
+	self.destination = nil
+	if self.state == "idle" then
+		self:waitFor(1 + 3 * math.random())
+	elseif self.state == "moveToCollect" then
+		local tilt = math.rad(-45)
+		self.restRotation = self.restRotation * CFrame.Angles(tilt, 0, 0)
+		self:setState("collect")
+	end
+end
+
+function BeeAI.jiggle(self: BeeAI, dt: number): ()
+	local model = self.bee.model
+	local primaryPart = model.PrimaryPart
+
+	if not primaryPart then
+		return
+	end
+
+	self.bee.model:PivotTo(
+		CFrame.new(primaryPart.Position) * self.restRotation * CFrame.Angles(0, 0, math.rad(math.sin(tick() * 15) * 5))
+	)
+end
+
 function BeeAI.move(self: BeeAI, dt: number): ()
 	-- Move
 
@@ -106,8 +134,7 @@ function BeeAI.move(self: BeeAI, dt: number): ()
 		model:PivotTo(CFrame.new(primaryPart.Position + direction * self.speed * dt) * self.restRotation)
 	else
 		model:PivotTo(CFrame.new(self.destination) * primaryPart.CFrame.Rotation)
-		self.destination = nil
-		self:waitFor(1 + 3 * math.random())
+		self:destinationReached()
 	end
 end
 
@@ -116,6 +143,13 @@ function BeeAI.states.idle(self: BeeAI, dt: number): ()
 	local primaryPart = self.bee.model.PrimaryPart
 	if not primaryPart then
 		return
+	end
+
+	if self.bee.swarm.fieldId then
+		if math.random() < 0.0005 then
+			self.setState(self, "moveToCollect")
+			return
+		end
 	end
 
 	local playerPos = self:getPlayerPos()
@@ -135,14 +169,52 @@ function BeeAI.states.idle(self: BeeAI, dt: number): ()
 		self:move(dt)
 	end
 
-	self.bee.model:PivotTo(
-		CFrame.new(primaryPart.Position) * self.restRotation * CFrame.Angles(0, 0, math.rad(math.sin(tick() * 15) * 5))
-	)
+	self:jiggle(dt)
+end
+
+function BeeAI.states.moveToCollect(self: BeeAI, dt: number): ()
+	-- Move to flower where it will collect
+	local fieldId = self.bee.swarm.fieldId
+	if not fieldId and not self.harvestFieldId then
+		self.setState(self, "idle")
+	end
+	if not self.destination and fieldId then
+		local fieldService = self.bee.swarm.fieldService
+		local flower = fieldService:findRandom(fieldId)
+		if flower then
+			flower.occupied = true
+			self.harvestFlower = flower
+			self.harvestFieldId = fieldId
+			local field = fieldService:getField(fieldId)
+			local basePos = field.data.position - Vector3.new(field.data.size.X / 2, 0, field.data.size.Y / 2)
+
+			self.destination = basePos + Vector3.new((flower.position.X - 0.5) * 4, 2.5, (flower.position.Y - 0.5) * 4)
+		else
+			self:setState("idle")
+		end
+	elseif self.destination then
+		self:move(dt)
+	end
+
+	self:jiggle(dt)
 end
 
 function BeeAI.states.collect(self: BeeAI, dt: number): ()
-	-- Collect
-	print("Collect")
+	if self.timeInState > 3 then
+		local fieldService = self.bee.swarm.fieldService
+		if not self.harvestFieldId or not self.harvestFlower then
+			return
+		end
+		fieldService:collectFlower(self.bee.player, self.harvestFieldId, self.harvestFlower)
+
+		self.harvestFlower.occupied = false
+		self.harvestFieldId = nil
+		self.harvestFlower = nil
+		self:setState("idle")
+		return
+	end
+
+	self:jiggle(dt)
 end
 
 return BeeAI

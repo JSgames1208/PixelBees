@@ -10,9 +10,12 @@ Bee.__index = Bee
 
 type Bee = Types.Bee & typeof(setmetatable({}, Bee))
 
-function Bee.new(player: Player, beeType: string, index: number): Bee
+type Swarm = Types.Swarm
+
+function Bee.new(player: Player, beeType: string, swarm: Swarm, index: number): Bee
 	local self = setmetatable({}, Bee) :: Bee
 	self.player = player
+	self.swarm = swarm
 	self.type = beeType
 	self.index = index
 

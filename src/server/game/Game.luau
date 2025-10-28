@@ -40,13 +40,15 @@ function Game.startServices(self: Game): ()
 	self.fieldService.playerService = self.playerService
 	self.fieldService.toolService = self.toolService
 
+	self.toolService.fieldService = self.fieldService
+	self.toolService.playerService = self.playerService
+
 	self.playerService.fieldService = self.fieldService
 	self.playerService.toolService = self.toolService
 	self.playerService.swarmService = self.swarmService
 	self.playerService.dataService = self.dataService
 
-	self.toolService.fieldService = self.fieldService
-	self.toolService.playerService = self.playerService
+	self.swarmService.fieldService = self.fieldService
 end
 
 function Game.start(self: Game): Game

@@ -39,12 +39,12 @@ function FieldGenerator.generateField(fieldData: FieldData): Field
 	local field = Field.new(fieldData)
 
 	local flowers: { [string]: Flower } = {}
-	for i = 1, fieldData.size.X / 4 do
-		for j = 1, fieldData.size.Y / 4 do
+	for i = 1, math.round(fieldData.size.X / 4) do
+		for j = 1, math.round(fieldData.size.Y / 4) do
 			local color = Chance(fieldData.chance.colors)
 			local size = Chance(fieldData.chance.sizes)
 
-			flowers[string.format("%d_%d", i, j)] = Flower.new(color, size)
+			flowers[string.format("%d_%d", i, j)] = Flower.new(color, size, Vector2.new(i, j))
 		end
 	end
 
@@ -68,8 +68,8 @@ function FieldGenerator.generateModel(field: Field): Model
 	local model = Instance.new("Model")
 	model.Name = field.data.name
 
-	for i = 1, field.data.size.X / 4 do
-		for j = 1, field.data.size.Y / 4 do
+	for i = 1, math.round(field.data.size.X / 4) do
+		for j = 1, math.round(field.data.size.Y / 4) do
 			local color: string, size: string = field.state:getFlowerStateAt(i, j)
 			local part: Part = LoadFlowerPart(color, size)
 			part.Position = Vector3.new(

@@ -16,11 +16,12 @@ function Swarm.new(player: Player): Swarm
 	local self = setmetatable({}, Swarm) :: Swarm
 	self.player = player
 	self.bees = {}
+	self.fieldId = nil
 	return self
 end
 
 function Swarm.addBee(self: Swarm, beeType: string): ()
-	local bee = Bee.new(self.player, beeType, self:size() + 1)
+	local bee = Bee.new(self.player, beeType, self, self:size() + 1)
 	self.bees[bee:getId()] = bee
 end
 
@@ -38,6 +39,13 @@ function Swarm.removeBee(self: Swarm, bee: Bee): ()
 end
 
 function Swarm.update(self: Swarm, dt: number): ()
+	local field = self.fieldService:getPlayerField(self.player)
+	if field then
+		self.fieldId = field.data.id
+	else
+		self.fieldId = nil
+	end
+
 	for _, bee in self.bees do
 		bee:update(dt)
 	end

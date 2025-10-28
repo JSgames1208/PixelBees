@@ -54,4 +54,16 @@ function PlayerEntity.updateCollider(self: PlayerEntity): ()
 	end
 end
 
+function PlayerEntity.destroy(self: PlayerEntity): ()
+	-- Destroy player entity logic here
+
+	if self.collider then
+		self.collider:Destroy()
+	end
+
+	if self.heartbeatConnection then
+		self.heartbeatConnection:Disconnect()
+	end
+end
+
 return PlayerEntity

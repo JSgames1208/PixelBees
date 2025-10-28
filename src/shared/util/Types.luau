@@ -7,7 +7,7 @@ local Types = {}
 
 export type FieldService = {
 	-- Properties
-	fields: { [string]: any },
+	fields: { [string]: Field },
 	generator: FieldGenerator,
 	flowerCollection: FlowerCollection,
 	playerService: PlayerService,
@@ -19,11 +19,13 @@ export type FieldService = {
 	getInstance: () -> FieldService,
 	start: (self: FieldService) -> FieldService,
 	update: (self: FieldService, dt: number) -> (),
-	getField: (self: FieldService, fieldId: string) -> any,
-	setField: (self: FieldService, fieldId: string, fieldData: any) -> (),
-	setFields: (self: FieldService, fieldsData: { [string]: any }) -> (),
-	getPlayerField: (self: FieldService, player: Player) -> any,
+	findRandom: (self: FieldService, fieldId: string) -> Flower?,
+	getField: (self: FieldService, fieldId: string) -> Field,
+	setField: (self: FieldService, fieldId: string, fieldData: FieldData) -> (),
+	setFields: (self: FieldService, fieldsData: { [string]: Field }) -> (),
+	getPlayerField: (self: FieldService, player: Player) -> Field?,
 	collect: (self: FieldService, player: Player) -> (),
+	collectFlower: (self: FieldService, player: Player, fieldId: string, flower: Flower) -> (),
 	replenish: (self: FieldService) -> (),
 	startReplenish: (self: FieldService) -> (),
 }
@@ -39,6 +41,7 @@ export type ToolService = {
 	getPlayerTool: (self: ToolService, player: Player) -> PlayerTool,
 	playerTools: { [number]: PlayerTool },
 	onPlayerAdded: (self: ToolService, player: Player) -> (),
+	onPlayerRemoving: (self: ToolService, player: Player) -> (),
 	equip: (self: ToolService, player: Player, toolId: string) -> (),
 }
 
@@ -87,6 +90,7 @@ export type FieldState = {
 	flowers: { [string]: Flower },
 
 	new: () -> FieldState,
+	getCount: (self: FieldState) -> number,
 	getFlowerStateAt: (self: FieldState, x: number, y: number) -> (string, string),
 	populate: (self: FieldState, flowers: { [string]: Flower }) -> (),
 }
@@ -96,6 +100,8 @@ export type Flower = {
 	color: string,
 	size: string,
 	harvested: number,
+	occupied: boolean,
+	position: Vector2,
 
 	new: (id: string, data: any) -> Flower,
 	harvest: (self: Flower, amount: number) -> boolean,
@@ -189,6 +195,7 @@ export type PlayerEntity = {
 	getCollider: (self: PlayerEntity) -> BasePart,
 
 	new: (player: Player) -> PlayerEntity,
+	destroy: (self: PlayerEntity) -> (),
 }
 
 export type PlayerStats = {
@@ -251,12 +258,14 @@ export type PlayerTool = {
 export type SwarmService = {
 	-- Define properties and methods of BeeService here
 	swarms: { [number]: Swarm },
+	fieldService: FieldService,
 
 	new: () -> SwarmService,
 	getInstance: () -> SwarmService,
 	start: (self: SwarmService) -> SwarmService,
 	update: (self: SwarmService, dt: number) -> (),
 	onPlayerAdded: (self: SwarmService, player: Player) -> (),
+	onPlayerRemoving: (self: SwarmService, player: Player) -> (),
 
 	addSwarm: (self: SwarmService, player: Player) -> Swarm,
 	getSwarm: (self: SwarmService, player: Player) -> Swarm,
@@ -266,7 +275,10 @@ export type SwarmService = {
 export type Swarm = {
 	-- Define properties and methods of Swarm here
 	player: Player,
+	fieldId: string?,
 	bees: { [string]: Bee },
+
+	fieldService: FieldService,
 
 	new: () -> Swarm,
 	addBee: (self: Swarm, beeType: string) -> (),
@@ -285,8 +297,9 @@ export type Bee = {
 	index: number,
 	name: string,
 	id: string,
+	swarm: Swarm,
 
-	new: (player: Player, model: Model) -> Bee,
+	new: (player: Player, beeType: string, swarm: Swarm, index: number) -> Bee,
 	update: (self: Bee, dt: number) -> (),
 	destroy: (self: Bee) -> (),
 
@@ -308,6 +321,8 @@ export type BeeAI = {
 	timeOut: number,
 	changeDirection: boolean,
 	restRotation: CFrame,
+	harvestFieldId: string?,
+	harvestFlower: Flower?,
 
 	new: (bee: Bee) -> BeeAI,
 	step: (self: BeeAI, dt: number) -> (),
@@ -318,13 +333,15 @@ export type BeeAI = {
 	getPlayerPos: (self: BeeAI) -> Vector3,
 	isCloseToPlayer: (self: BeeAI) -> boolean,
 	move: (self: BeeAI, dt: number) -> (),
+	jiggle: (self: BeeAI, dt: number) -> (),
 	states: {
 		idle: (self: BeeAI, dt: number) -> (),
 		collect: (self: BeeAI, dt: number) -> (),
+		moveToCollect: (self: BeeAI, dt: number) -> (),
 	},
 }
 
-export type BeeState = "idle" | "collect"
+export type BeeState = "idle" | "moveToCollect" | "collect"
 
 -------------------------
 -- Game

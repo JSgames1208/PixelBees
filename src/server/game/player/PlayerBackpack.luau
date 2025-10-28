@@ -34,7 +34,7 @@ function PlayerBackpack.removePollen(self: PlayerBackpack, amount: number): ()
 end
 
 function PlayerBackpack.getSize(self: PlayerBackpack): number
-	return 10
+	return 1000
 end
 
 return PlayerBackpack

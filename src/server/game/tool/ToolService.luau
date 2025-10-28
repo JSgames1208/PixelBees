@@ -47,6 +47,12 @@ function ToolService.onPlayerAdded(self: ToolService, player: Player): ()
 	self.playerTools[player.UserId].playerService = self.playerService
 end
 
+function ToolService.onPlayerRemoving(self: ToolService, player: Player): ()
+	-- Handle player removing logic for tools
+	self.playerTools[player.UserId]:destroy()
+	self.playerTools[player.UserId] = nil
+end
+
 function ToolService.equip(self: ToolService, player: Player, toolId: string): ()
 	local playerId = player.UserId
 	local playerTool = self.playerTools[playerId]
@@ -62,6 +68,8 @@ function ToolService.equip(self: ToolService, player: Player, toolId: string): (
 	else
 		playerTool = PlayerTool.new(player, tool)
 		self.playerTools[playerId] = playerTool
+		self.playerTools[playerId].fieldService = self.fieldService
+		self.playerTools[playerId].playerService = self.playerService
 	end
 end
 

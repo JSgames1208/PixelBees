@@ -7,10 +7,11 @@ Flower.__index = Flower
 
 type Flower = Types.Flower & typeof(setmetatable({}, Flower))
 
-function Flower.new(color: string, size: any): Flower
+function Flower.new(color: string, size: string, position: Vector2): Flower
 	local self = setmetatable({}, Flower) :: Flower
 	self.color = color
 	self.size = size
+	self.position = position
 	self.harvested = 0
 	return self
 end

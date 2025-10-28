@@ -20,6 +20,16 @@ end
 
 function FieldState.populate(self: FieldState, flowers: { [string]: Flower }): ()
 	self.flowers = flowers
+
+	print(self.flowers)
+end
+
+function FieldState.getCount(self: FieldState): number
+	local count = 0
+	for _, _ in pairs(self.flowers) do
+		count += 1
+	end
+	return count
 end
 
 function FieldState.getFlowerStateAt(self: FieldState, x: number, y: number): (string, string)

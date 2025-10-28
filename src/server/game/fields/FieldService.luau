@@ -16,6 +16,7 @@ FieldService.__index = FieldService
 type FieldService = Types.FieldService & typeof(setmetatable({}, FieldService))
 
 type Field = Types.Field
+type Flower = Types.Flower
 type PlayerEntity = Types.PlayerEntity
 
 local _instance: FieldService?
@@ -52,7 +53,7 @@ function FieldService.startReplenish(self: FieldService): ()
 	local lastReplenish = os.clock()
 
 	self.replenishConnection = RunService.Heartbeat:Connect(function(dt)
-		if os.clock() - lastReplenish > 5 then
+		if os.clock() - lastReplenish > 15 then
 			lastReplenish = os.clock()
 			self:replenish()
 		end
@@ -89,7 +90,7 @@ function FieldService.setFields(self: FieldService, fieldsData: { [string]: any 
 	self.fields = fieldsData
 end
 
-function FieldService.getPlayerField(self: FieldService, player: Player): any
+function FieldService.getPlayerField(self: FieldService, player: Player): Field?
 	local playerEntity: PlayerEntity = self.playerService.playerEntities[player.UserId]
 
 	-- Determine which field the player is in
@@ -124,8 +125,37 @@ local function rotateVector2(v: Vector2, direction: Vector2): Vector2
 	end
 end
 
+function FieldService.findRandom(self: FieldService, fieldId: string): Flower?
+	local field = self.fields[fieldId]
+	if not field then
+		return nil
+	end
+
+	local flowers = field.state.flowers
+	local keys = {}
+	for key, _ in pairs(flowers) do
+		table.insert(keys, key)
+	end
+
+	local randomKey = keys[math.random(#keys)]
+	if not randomKey then
+		return nil
+	end
+
+	local flower = flowers[randomKey]
+	if not flower then
+		return nil
+	end
+
+	if flower.harvested == 4 or flower.occupied then
+		return nil
+	end
+
+	return flowers[randomKey]
+end
+
 function FieldService.collect(self: FieldService, player: Player)
-	local field: Field = self:getPlayerField(player)
+	local field = self:getPlayerField(player)
 	if field then
 		local character = player.Character
 		if not character then
@@ -165,6 +195,18 @@ function FieldService.collect(self: FieldService, player: Player)
 			if harvested then
 				stats:addPollen(1)
 			end
+		end
+	end
+end
+
+function FieldService.collectFlower(self: FieldService, player: Player, fieldId: string, flower: Flower)
+	local field = self:getField(fieldId)
+	if field then
+		local harvested = field:harvest(string.format("%d_%d", flower.position.X, flower.position.Y), 1)
+		if harvested then
+			local playerData = self.playerService:getPlayerData(player)
+			local stats = playerData:getStats()
+			stats:addPollen(1)
 		end
 	end
 end

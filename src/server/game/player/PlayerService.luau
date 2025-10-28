@@ -82,6 +82,12 @@ end
 
 function PlayerService.onPlayerRemoving(self: PlayerService, player: Player): ()
 	-- Handle player removing logic
+
+	self.toolService:onPlayerRemoving(player)
+	self.swarmService:onPlayerRemoving(player)
+
+	self.playerEntities[player.UserId]:destroy()
+	self.playerEntities[player.UserId] = nil
 end
 
 return PlayerService

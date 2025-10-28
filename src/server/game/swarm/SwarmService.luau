@@ -55,9 +55,19 @@ end
 
 function SwarmService.onPlayerAdded(self: SwarmService, player: Player): ()
 	local swarm = self:addSwarm(player)
+	swarm.fieldService = self.fieldService
 
-	for i = 1, 100 do
+	for i = 1, 50 do
 		swarm:addBee("BasicBee")
+	end
+end
+
+function SwarmService.onPlayerRemoving(self: SwarmService, player: Player): ()
+	self:getSwarm(player):destroy()
+	self:removeSwarm(player)
+
+	if workspace.BeeFolders:FindFirstChild(tostring(player.UserId)) then
+		workspace.BeeFolders[tostring(player.UserId)]:Destroy()
 	end
 end
 
