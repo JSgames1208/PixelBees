@@ -157,8 +157,14 @@ function FieldService.collect(self: FieldService, player: Player)
 			table.insert(flowersToCollect, toCollect)
 		end
 
+		local playerData = self.playerService:getPlayerData(player)
+		local stats = playerData:getStats()
+
 		for _, flowerKey in flowersToCollect do
-			field:harvest(string.format("%d_%d", flowerKey.X, flowerKey.Y), 1)
+			local harvested = field:harvest(string.format("%d_%d", flowerKey.X, flowerKey.Y), 1)
+			if harvested then
+				stats:addPollen(1)
+			end
 		end
 	end
 end

@@ -16,7 +16,12 @@ function Flower.new(color: string, size: any): Flower
 end
 
 function Flower.harvest(self: Flower, amount): ()
-	self.harvested = math.min(self.harvested + amount, 4)
+	local harvested = math.min(self.harvested + amount, 4)
+	if self.harvested == harvested then
+		return false
+	end
+	self.harvested = harvested
+	return true
 end
 
 function Flower.replenish(self: Flower, amount): ()

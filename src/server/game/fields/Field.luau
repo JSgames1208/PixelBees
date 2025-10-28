@@ -52,25 +52,29 @@ function Field.replenish(self: Field): ()
 	end
 end
 
-function Field.harvest(self: Field, flowerKey: string, amount: number): ()
+function Field.harvest(self: Field, flowerKey: string, amount: number): boolean
 	local flowerState = self.state.flowers[flowerKey]
 
 	if not flowerState then
-		return
+		return false
 	end
-	flowerState:harvest(amount)
+
+	local harvested = flowerState:harvest(amount)
+	if not harvested then
+		return false
+	end
 
 	if not table.find(self.toReplenish, flowerKey) then
 		self.toReplenish[#self.toReplenish + 1] = flowerKey
 	end
 
 	if not self.model then
-		return
+		return false
 	end
 
 	local flowerModel: Part = self.model:FindFirstChild(flowerKey) :: Part
 	if not flowerModel then
-		return
+		return false
 	end
 
 	flowerModel.Position = Vector3.new(
@@ -78,6 +82,8 @@ function Field.harvest(self: Field, flowerKey: string, amount: number): ()
 		self.data.position.Y + 1 - flowerState.harvested * 0.51,
 		flowerModel.Position.Z
 	)
+
+	return true
 end
 
 function Field.setModel(self: Field, model: Model): ()

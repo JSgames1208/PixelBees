@@ -8,11 +8,12 @@ local PlayerEntity = require(ServerScriptService.Server.game.player.PlayerEntity
 local PlayerService = {}
 PlayerService.__index = PlayerService
 
+type PlayerService = Types.PlayerService & typeof(setmetatable({}, PlayerService))
+
 type FieldService = Types.FieldService
 type ToolService = Types.ToolService
 type PlayerEntity = Types.PlayerEntity
-
-type PlayerService = Types.PlayerService & typeof(setmetatable({}, PlayerService))
+type PlayerData = Types.PlayerData
 
 local _instance: PlayerService?
 
@@ -63,6 +64,10 @@ function PlayerService.getPlayerEntity(self: PlayerService, player: Player): Pla
 	return self.playerEntities[player.UserId]
 end
 
+function PlayerService.getPlayerData(self: PlayerService, player: Player): PlayerData
+	return self.dataService:getData(player)
+end
+
 function PlayerService.onPlayerAdded(self: PlayerService, player: Player): ()
 	-- Handle player added logic
 	self.toolService:onPlayerAdded(player)
@@ -71,6 +76,8 @@ function PlayerService.onPlayerAdded(self: PlayerService, player: Player): ()
 	self.playerEntities[player.UserId] = PlayerEntity.new(player):start()
 
 	self.swarmService:onPlayerAdded(player)
+
+	self.dataService:onPlayerAdded(player)
 end
 
 function PlayerService.onPlayerRemoving(self: PlayerService, player: Player): ()

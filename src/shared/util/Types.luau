@@ -1,5 +1,4 @@
 --!strict
-
 local Types = {}
 
 -------------------------
@@ -27,23 +26,6 @@ export type FieldService = {
 	collect: (self: FieldService, player: Player) -> (),
 	replenish: (self: FieldService) -> (),
 	startReplenish: (self: FieldService) -> (),
-}
-
-export type PlayerService = {
-	-- Define properties and methods of PlayerService here
-	fieldService: FieldService,
-	toolService: ToolService,
-	swarmService: SwarmService,
-
-	playerEntities: { [number]: PlayerEntity },
-
-	new: () -> PlayerService,
-	start: (self: PlayerService) -> PlayerService,
-	getInstance: () -> PlayerService,
-	onPlayerAdded: (self: PlayerService, player: Player) -> (),
-	onPlayerRemoving: (self: PlayerService, player: Player) -> (),
-	update: (self: PlayerService, dt: number) -> (),
-	getPlayerEntity: (self: PlayerService, player: Player) -> PlayerEntity,
 }
 
 export type ToolService = {
@@ -86,7 +68,7 @@ export type Field = {
 	populate: (self: Field, flowers: { [string]: Flower }) -> (),
 	containsPosition: (self: Field, position: Vector3) -> boolean,
 	replenish: (self: Field) -> (),
-	harvest: (self: Field, flowerKey: string, amount: number) -> (),
+	harvest: (self: Field, flowerKey: string, amount: number) -> boolean,
 }
 
 export type FieldData = {
@@ -116,7 +98,7 @@ export type Flower = {
 	harvested: number,
 
 	new: (id: string, data: any) -> Flower,
-	harvest: (self: Flower, amount: number) -> (),
+	harvest: (self: Flower, amount: number) -> boolean,
 	replenish: (self: Flower, amount: number) -> (),
 }
 
@@ -142,8 +124,56 @@ export type FlowerCollection = {
 }
 
 -------------------------
+-- Data
+-------------------------
+
+export type DataService = {
+	-- Define properties and methods of DataService here
+	profiles: { [number]: any },
+
+	new: () -> DataService,
+	start: (self: DataService) -> DataService,
+	getInstance: () -> DataService,
+	loadPlayerData: (self: DataService, player: Player) -> (),
+	getProfile: (self: DataService, player: Player) -> any,
+	getData: (self: DataService, player: Player) -> PlayerData,
+	onPlayerAdded: (self: DataService, player: Player) -> (),
+}
+
+export type PlayerData = {
+	-- Define properties and methods of PlayerData here
+	tool: PlayerTool,
+	stats: PlayerStats,
+
+	new: (player: Player) -> PlayerData,
+	default: () -> PlayerData,
+	from: (raw: any) -> PlayerData,
+	getStats: (self: PlayerData) -> PlayerStats,
+	getTool: (self: PlayerData) -> PlayerTool,
+}
+
+-------------------------
 -- Player
 -------------------------
+
+export type PlayerService = {
+	-- Define properties and methods of PlayerService here
+	fieldService: FieldService,
+	toolService: ToolService,
+	swarmService: SwarmService,
+	dataService: DataService,
+
+	playerEntities: { [number]: PlayerEntity },
+
+	new: () -> PlayerService,
+	start: (self: PlayerService) -> PlayerService,
+	getInstance: () -> PlayerService,
+	getPlayerData: (self: PlayerService, player: Player) -> PlayerData,
+	onPlayerAdded: (self: PlayerService, player: Player) -> (),
+	onPlayerRemoving: (self: PlayerService, player: Player) -> (),
+	update: (self: PlayerService, dt: number) -> (),
+	getPlayerEntity: (self: PlayerService, player: Player) -> PlayerEntity,
+}
 
 export type PlayerEntity = {
 	-- Define properties and methods of PlayerEntity here
@@ -159,6 +189,37 @@ export type PlayerEntity = {
 	getCollider: (self: PlayerEntity) -> BasePart,
 
 	new: (player: Player) -> PlayerEntity,
+}
+
+export type PlayerStats = {
+	-- Define properties and methods of PlayerStats here
+	honey: number,
+	backpack: PlayerBackpack,
+
+	new: () -> PlayerStats,
+	from: (raw: any) -> PlayerStats,
+	getBackpack: (self: PlayerStats) -> PlayerBackpack,
+	setHoney: (self: PlayerStats, amount: number) -> PlayerStats,
+	getHoney: (self: PlayerStats) -> number,
+	addHoney: (self: PlayerStats, amount: number) -> PlayerStats,
+	removeHoney: (self: PlayerStats, amount: number) -> PlayerStats,
+	setPollen: (self: PlayerStats, amount: number) -> PlayerStats,
+	getPollen: (self: PlayerStats) -> number,
+	addPollen: (self: PlayerStats, amount: number) -> PlayerStats,
+	removePollen: (self: PlayerStats, amount: number) -> PlayerStats,
+}
+
+export type PlayerBackpack = {
+	-- Define properties and methods of PlayerBackpack here
+	pollen: number,
+
+	new: () -> PlayerBackpack,
+	from: (raw: any) -> PlayerBackpack,
+	setPollen: (self: PlayerBackpack, amount: number) -> (),
+	getPollen: (self: PlayerBackpack) -> number,
+	addPollen: (self: PlayerBackpack, amount: number) -> (),
+	removePollen: (self: PlayerBackpack, amount: number) -> (),
+	getSize: (self: PlayerBackpack) -> number,
 }
 
 export type PlayerTool = {
@@ -276,6 +337,7 @@ export type Game = {
 	toolService: ToolService,
 	playerService: PlayerService,
 	swarmService: SwarmService,
+	dataService: DataService,
 
 	new: () -> Game,
 	startServices: (self: Game) -> (),

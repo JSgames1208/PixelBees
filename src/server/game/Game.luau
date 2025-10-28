@@ -10,6 +10,7 @@ local FieldService = ServiceRegistry.FieldService
 local ToolService = ServiceRegistry.ToolService
 local PlayerService = ServiceRegistry.PlayerService
 local SwarmService = ServiceRegistry.SwarmService
+local DataService = ServiceRegistry.DataService
 
 local Game = {}
 Game.__index = Game
@@ -34,6 +35,7 @@ function Game.startServices(self: Game): ()
 	self.toolService = ToolService:start()
 	self.playerService = PlayerService:start()
 	self.swarmService = SwarmService:start()
+	self.dataService = DataService:start()
 
 	self.fieldService.playerService = self.playerService
 	self.fieldService.toolService = self.toolService
@@ -41,6 +43,7 @@ function Game.startServices(self: Game): ()
 	self.playerService.fieldService = self.fieldService
 	self.playerService.toolService = self.toolService
 	self.playerService.swarmService = self.swarmService
+	self.playerService.dataService = self.dataService
 
 	self.toolService.fieldService = self.fieldService
 	self.toolService.playerService = self.playerService
