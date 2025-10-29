@@ -49,6 +49,8 @@ function Game.startServices(self: Game): ()
 	self.playerService.dataService = self.dataService
 
 	self.swarmService.fieldService = self.fieldService
+
+	self.dataService.playerService = self.playerService
 end
 
 function Game.start(self: Game): Game

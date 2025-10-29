@@ -12,11 +12,19 @@ type PlayerData = Types.PlayerData & typeof(setmetatable({}, PlayerData))
 
 type PlayerStats = Types.PlayerStats
 type PlayerTool = Types.PlayerTool
+type PlayerService = Types.PlayerService
+
+local playerService: PlayerService?
 
 function PlayerData.new(): PlayerData
 	local self = setmetatable({}, PlayerData) :: PlayerData
 	self.stats = PlayerStats.new()
 	return self
+end
+
+function PlayerData.setPlayerService(playerService: PlayerService)
+	playerService = playerService
+	PlayerStats.setPlayerService(playerService)
 end
 
 function PlayerData.default(): PlayerData

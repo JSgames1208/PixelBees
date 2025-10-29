@@ -39,7 +39,7 @@ function Field.replenish(self: Field): ()
 
 		flowerModel.Position = Vector3.new(
 			flowerModel.Position.X,
-			self.data.position.Y + 1 - flowerState.harvested * 0.51,
+			self.data.position.Y + 1 - flowerState.harvested * 0.525,
 			flowerModel.Position.Z
 		)
 	end
@@ -79,7 +79,7 @@ function Field.harvest(self: Field, flowerKey: string, amount: number): boolean
 
 	flowerModel.Position = Vector3.new(
 		flowerModel.Position.X,
-		self.data.position.Y + 1 - flowerState.harvested * 0.51,
+		self.data.position.Y + 1 - flowerState.harvested * 0.525,
 		flowerModel.Position.Z
 	)
 

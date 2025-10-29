@@ -136,6 +136,7 @@ export type FlowerCollection = {
 export type DataService = {
 	-- Define properties and methods of DataService here
 	profiles: { [number]: any },
+	playerService: PlayerService,
 
 	new: () -> DataService,
 	start: (self: DataService) -> DataService,
@@ -149,6 +150,7 @@ export type DataService = {
 export type PlayerData = {
 	-- Define properties and methods of PlayerData here
 	tool: PlayerTool,
+	entity: PlayerEntity,
 	stats: PlayerStats,
 
 	new: (player: Player) -> PlayerData,
@@ -185,6 +187,7 @@ export type PlayerEntity = {
 	-- Define properties and methods of PlayerEntity here
 	player: Player,
 	character: Model?,
+	fieldId: string?,
 	collider: BasePart,
 	heartbeatConnection: RBXScriptConnection?,
 
@@ -201,6 +204,7 @@ export type PlayerEntity = {
 export type PlayerStats = {
 	-- Define properties and methods of PlayerStats here
 	honey: number,
+	entity: PlayerEntity,
 	backpack: PlayerBackpack,
 
 	new: () -> PlayerStats,

@@ -10,11 +10,19 @@ PlayerStats.__index = PlayerStats
 
 type PlayerStats = Types.PlayerStats & typeof(setmetatable({}, PlayerStats))
 
+type PlayerService = Types.PlayerService
+
+local playerService: PlayerService?
+
 function PlayerStats.new(): PlayerStats
 	local self = setmetatable({}, PlayerStats) :: PlayerStats
 	self.honey = 0
 	self.backpack = PlayerBackpack.new()
 	return self
+end
+
+function PlayerStats.setPlayerService(playerService)
+	playerService = playerService
 end
 
 function PlayerStats.from(raw: any): PlayerStats

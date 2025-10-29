@@ -103,11 +103,13 @@ function FieldService.getPlayerField(self: FieldService, player: Player): Field?
 		for _, part in parts do
 			if field.model then
 				if part:IsDescendantOf(field.model) then
+					playerEntity.fieldId = field.id
 					return field
 				end
 			end
 		end
 	end
+	playerEntity.fieldId = nil
 	return nil
 end
 
